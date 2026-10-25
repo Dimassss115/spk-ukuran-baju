@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPK Rekomendasi Ukuran Pakaian</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen pb-12">
+
+    <!-- Header / Navbar -->
+    <header class="bg-indigo-900 text-white py-6 shadow-md mb-8">
+        <div class="max-w-4xl mx-auto px-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+                    <i data-lucide="shirt" class="w-7 h-7 text-indigo-300"></i>
+                    SPK Ukuran Pakaian
+                </h1>
+                <p class="text-indigo-200 text-sm mt-1">Sistem Pendukung Keputusan Rekomendasi Ukuran Baju Presisi</p>
+            </div>
+            <button onclick="toggleModalBahan()" class="bg-indigo-800 hover:bg-indigo-700 text-indigo-100 text-xs md:text-sm px-3 py-2 rounded-lg border border-indigo-700 transition flex items-center gap-1">
+                <i data-lucide="info" class="w-4 h-4"></i> Info Bahan
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 grid grid-cols-1 md:grid-cols-12 gap-8">
+        
+        <!-- Form Input Parameter (Kolom Kiri) -->
+        <section class="md:col-span-7 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <h2 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                <i data-lucide="sliders" class="w-5 h-5 text-indigo-600"></i> Input Parameter Tubuh & Pakaian
+            </h2>
+
+            <form id="spkForm" class="space-y-6" onsubmit="event.preventDefault(); hitungUkuran();">
+                
+                <!-- Tinggi Badan -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label for="tbInput" class="text-sm font-semibold text-slate-700">Tinggi Badan (cm)</label>
+                        <span id="tbVal" class="text-sm font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full">170 cm</span>
+                    </div>
+                    <input type="range" id="tbInput" min="140" max="200" value="170" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600" oninput="updateVal('tb', this.value)">
+                </div>
+
+                <!-- Berat Badan -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label for="bbInput" class="text-sm font-semibold text-slate-700">Berat Badan (kg)</label>
+                        <span id="bbVal" class="text-sm font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full">65 kg</span>
+                    </div>
+                    <input type="range" id="bbInput" min="35" max="120" value="65" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600" oninput="updateVal('bb', this.value)">
+                </div>
+
+                <!-- Jenis Pakaian -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Jenis Pakaian Atasan</label>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="jenisBaju" value="kaos" class="peer hidden" checked>
+                            <div class="p-3 border rounded-xl text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50/50 peer-checked:text-indigo-900 transition hover:bg-slate-50">
+                                <div class="font-semibold text-sm">Kaos / T-Shirt</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">Potongan pas</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="jenisBaju" value="kemeja" class="peer hidden">
+                            <div class="p-3 border rounded-xl text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50/50 peer-checked:text-indigo-900 transition hover:bg-slate-50">
+                                <div class="font-semibold text-sm">Kemeja</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">Formal / Kerja</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="jenisBaju" value="jaket" class="peer hidden">
+                            <div class="p-3 border rounded-xl text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50/50 peer-checked:text-indigo-900 transition hover:bg-slate-50">
+                                <div class="font-semibold text-sm">Jaket</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">Outerwear</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="jenisBaju" value="hoodie" class="peer hidden">
+                            <div class="p-3 border rounded-xl text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50/50 peer-checked:text-indigo-900 transition hover:bg-slate-50">
+                                <div class="font-semibold text-sm">Hoodie / Sweatshirt</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">Longgar / Tebal</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Karakteristik Bahan Kain -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Karakteristik & Kelenturan Bahan</label>
+                    <select id="bahanInput" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="katun">Katun Biasa (Kelenturan Sedang)</option>
+                        <option value="spandex">Spandex / Elastis (Sangat Lentur / Stretch)</option>
+                        <option value="fleece">Fleece / Baby Terry (Tebal & Agak Kaku)</option>
+                        <option value="denim">Denim / Canvas (Kaku & Tidak Lentur)</option>
+                    </select>
+                </div>
+
+                <!-- Preferensi Fit -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Preferensi Gaya Potongan (Fit Style)</label>
+                    <select id="fitInput" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="slim">Slim Fit (Pas / Ketat di Badan)</option>
+                        <option value="regular" selected>Regular Fit (Standar / Nyaman)</option>
+                        <option value="loose">Loose / Oversized (Longgar)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-indigo-200 transition flex items-center justify-center gap-2">
+                    <i data-lucide="calculator" class="w-5 h-5"></i> Hitung Rekomendasi Ukuran
+                </button>
+            </form>
+        </section>
+
+        <!-- Hasil Rekomendasi SPK (Kolom Kanan) -->
+        <section class="md:col-span-5 flex flex-col gap-6">
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-center relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-indigo-600 text-white text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-bl-xl">
+                    Hasil Analisis SPK
+                </div>
+
+                <h3 class="text-sm font-semibold text-slate-500 mb-2">Rekomendasi Ukuran Utama</h3>
+                
+                <div id="badgeUkuran" class="inline-block bg-indigo-50 border-2 border-indigo-600 text-indigo-700 font-extrabold text-5xl px-8 py-4 rounded-2xl my-2 shadow-inner">
+                    M
+                </div>
+
+                <div class="mt-2 text-sm font-medium text-slate-700" id="textFitSaran">
+                    Regular Fit (Sesuai Standar)
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-slate-100 text-left space-y-2 text-xs text-slate-600">
+                    <div class="flex justify-between">
+                        <span>Tingkat Kecocokan (Match Index):</span>
+                        <span id="matchVal" class="font-bold text-slate-800">92%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2">
+                        <div id="matchBar" class="bg-indigo-600 h-2 rounded-full" style="width: 92%"></div>
+                    </div>
+                    <div class="flex justify-between pt-1">
+                        <span>Opsi Ukuran Cadangan:</span>
+                        <span id="cadanganVal" class="font-bold text-indigo-600">L (Lebih Longgar)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Catatan Kenyamanan Bahan -->
+            <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl text-xs text-amber-900 flex gap-3 items-start">
+                <i data-lucide="alert-circle" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5"></i>
+                <div>
+                    <h4 class="font-bold mb-1">Catatan Kenyamanan Bahan:</h4>
+                    <p id="catatanBahan">Bahan Katun memiliki daya serap baik dan kelenturan sedang. Ukuran M akan terpasang pas tanpa terasa sesak saat beraktivitas sehari-hari.</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3">
+                <button onclick="simpanHasil()" class="flex-1 bg-white hover:bg-slate-50 text-slate-700 font-semibold py-2.5 px-3 border border-slate-300 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
+                    <i data-lucide="bookmark" class="w-4 h-4"></i> Simpan Hasil
+                </button>
+                <button onclick="window.print()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
+                    <i data-lucide="printer" class="w-4 h-4"></i> Cetak Laporan
+                </button>
+            </div>
+
+            <!-- Riwayat Tersimpan -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <h4 class="text-xs font-bold text-slate-700 mb-2 flex items-center justify-between">
+                    <span>Riwayat Perhitungan</span>
+                    <button onclick="hapusRiwayat()" class="text-[10px] text-red-500 hover:underline">Hapus</button>
+                </h4>
+                <ul id="riwayatList" class="text-xs space-y-1.5 text-slate-600 max-h-36 overflow-y-auto">
+                    <li class="text-slate-400 italic">Belum ada riwayat tersimpan.</li>
+                </ul>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Modal Edukasi Bahan Kain -->
+    <div id="modalBahan" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white max-w-md w-full rounded-2xl p-6 shadow-xl relative">
+            <button onclick="toggleModalBahan()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <i data-lucide="book-open" class="w-5 h-5 text-indigo-600"></i> Karakteristik Bahan Kain
+            </h3>
+            <div class="text-xs text-slate-600 space-y-3 max-h-80 overflow-y-auto pr-1">
+                <div>
+                    <strong class="text-slate-800 block mb-0.5">1. Katun (Cotton):</strong>
+                    Bahan alami, menyerap keringat dengan baik, kelenturan sedang. Pilihan standar ukuran biasanya aman.
+                </div>
+                <div>
+                    <strong class="text-slate-800 block mb-0.5">2. Spandex / Stretch:</strong>
+                    Sangat elastis dan mengikuti bentuk tubuh. Bisa memilih 1 tingkat ukuran lebih kecil jika ingin tampilan slim fit.
+                </div>
+                <div>
+                    <strong class="text-slate-800 block mb-0.5">3. Fleece / Baby Terry:</strong>
+                    Bahan tebal berbulu di dalam. Disarankan memilih 1 tingkat lebih besar untuk ruang pakaian dalam (layering).
+                </div>
+                <div>
+                    <strong class="text-slate-800 block mb-0.5">4. Denim / Canvas:</strong>
+                    Kain kaku, tidak elastis, dan tidak melar. Sangat disarankan tidak memilih ukuran yang terlalu presisi/ketat.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Engine -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        function updateVal(type, val) {
+            document.getElementById(type + 'Val').innerText = val + (type === 'tb' ? ' cm' : ' kg');
+            hitungUkuran();
+        }
+
+        function hitungUkuran() {
+            const tb = parseFloat(document.getElementById('tbInput').value);
+            const bb = parseFloat(document.getElementById('bbInput').value);
+            const jenis = document.querySelector('input[name="jenisBaju"]:checked').value;
+            const bahan = document.getElementById('bahanInput').value;
+            const fit = document.getElementById('fitInput').value;
+
+            // 1. Logika Skor BMI Dasar & Rasio Tubuh
+            const tbMeter = tb / 100;
+            const bmi = bb / (tbMeter * tbMeter);
+            
+            let sizeIndex = 2; // Default: M (0=XS, 1=S, 2=M, 3=L, 4=XL, 5=XXL)
+
+            if (bmi < 18.5) {
+                sizeIndex = (tb > 172) ? 2 : 1; // S atau M
+            } else if (bmi >= 18.5 && bmi < 24.9) {
+                sizeIndex = (tb > 175) ? 3 : 2; // M atau L
+            } else if (bmi >= 25 && bmi < 29.9) {
+                sizeIndex = (tb > 180) ? 4 : 3; // L atau XL
+            } else {
+                sizeIndex = (bmi >= 35) ? 5 : 4; // XL atau XXL
+            }
+
+            // 2. Penyesuaian Offset Jenis Pakaian
+            if (jenis === 'hoodie' || jenis === 'jaket') sizeIndex += 0.5;
+            if (jenis === 'kemeja') sizeIndex += 0.2;
+
+            // 3. Penyesuaian Offset Bahan
+            if (bahan === 'denim' || bahan === 'fleece') sizeIndex += 0.3;
+            if (bahan === 'spandex') sizeIndex -= 0.3;
+
+            // 4. Penyesuaian Offset Fit Preference
+            if (fit === 'loose') sizeIndex += 0.5;
+            if (fit === 'slim') sizeIndex -= 0.4;
+
+            // Mapping Hasil Ke Label Ukuran
+            const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
+            let finalIdx = Math.round(sizeIndex);
+            if (finalIdx < 0) finalIdx = 0;
+            if (finalIdx > 4) finalIdx = 4;
+
+            const mainSize = sizes[finalIdx];
+            const altSize = (finalIdx < 4) ? sizes[finalIdx + 1] + " (Lebih Longgar)" : sizes[finalIdx - 1] + " (Lebih Pas)";
+
+            // Update Tampilan UI
+            document.getElementById('badgeUkuran').innerText = mainSize;
+            document.getElementById('cadanganVal').innerText = altSize;
+            
+            // Text Fit & Catatan Bahan
+            let fitText = "Regular Fit (Sesuai Standar Nyaman)";
+            if (fit === 'slim') fitText = "Slim Fit (Presisi di Badan)";
+            if (fit === 'loose') fitText = "Loose / Oversized Fit (Sangat Longgar)";
+            document.getElementById('textFitSaran').innerText = fitText;
+
+            let catatan = "Bahan Katun memiliki daya serap baik dan kelenturan sedang. Ukuran ini terpasang aman dan nyaman.";
+            if (bahan === 'spandex') catatan = "Bahan Spandex sangat lentur. Ukuran ini akan mengikuti bentuk tubuh tanpa sesak.";
+            if (bahan === 'fleece') catatan = "Bahan Fleece tebal. Ukuran disesuaikan agar memberi ruang gerak dan layering baju dalam.";
+            if (bahan === 'denim') catatan = "Bahan Denim kaku & tidak melar. Ukuran disesuaikan agar bahu dan lingkar dada tidak terasa tertekan.";
+            document.getElementById('catatanBahan').innerText = catatan;
+
+            // Random Match Score for Visual Effect (88% - 98%)
+            const matchPercent = Math.min(98, Math.max(88, Math.floor(95 - (Math.abs(sizeIndex - finalIdx) * 10))));
+            document.getElementById('matchVal').innerText = matchPercent + "%";
+            document.getElementById('matchBar').style.width = matchPercent + "%";
+        }
+
+        function toggleModalBahan() {
+            const modal = document.getElementById('modalBahan');
+            modal.classList.toggle('hidden');
+        }
+
+        function simpanHasil() {
+            const tb = document.getElementById('tbInput').value;
+            const bb = document.getElementById('bbInput').value;
+            const size = document.getElementById('badgeUkuran').innerText;
+            const item = `${tb}cm / ${bb}kg ➔ Ukuran ${size}`;
+
+            let history = JSON.parse(localStorage.getItem('spk_history') || '[]');
+            history.unshift(item);
+            if (history.length > 5) history.pop();
+            localStorage.setItem('spk_history', JSON.stringify(history));
+            renderRiwayat();
+        }
+
+        function renderRiwayat() {
+            const history = JSON.parse(localStorage.getItem('spk_history') || '[]');
+            const list = document.getElementById('riwayatList');
+            if (history.length === 0) {
+                list.innerHTML = '<li class="text-slate-400 italic">Belum ada riwayat tersimpan.</li>';
+                return;
+            }
+            list.innerHTML = history.map(h => `<li class="border-b border-slate-100 pb-1">${h}</li>`).join('');
+        }
+
+        function hapusRiwayat() {
+            localStorage.removeItem('spk_history');
+            renderRiwayat();
+        }
+
+        // Run Initial Calculation & Render History
+        hitungUkuran();
+        renderRiwayat();
+    </script>
+</body>
+</html>
